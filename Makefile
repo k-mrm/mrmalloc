@@ -5,5 +5,6 @@ main.o: ./src/main.c
 malloc.o: malloc.c
 	gcc -c ./src/malloc.c
 
+.PHONY: clean
 clean:
 	rm -f ./src/*.o
