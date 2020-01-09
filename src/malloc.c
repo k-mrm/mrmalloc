@@ -2,7 +2,8 @@
 
 #include "malloc.h"
 
-void *mrmalloc(size_t n) {
+/* k&r malloc */
+void *mrmalloc(size_t nbyte) {
     return NULL;
 }
 
