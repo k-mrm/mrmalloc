@@ -3,6 +3,8 @@
 
 #include "malloc.h"
 
+void *global_base = NULL;
+
 void *mrmalloc(size_t nbytes) {
     if(nbytes == 0) {
         return NULL;
