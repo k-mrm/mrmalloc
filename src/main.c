@@ -26,8 +26,10 @@ void dump_person(Person *p) {
 }
 
 int main(void) {
-    Person *bob = new_person("iwashi", 371741, OTHER);
+    printf("%zdbyte\n", __alignof__(mem_header));
+    printf("%zdbyte\n", sizeof(mem_header));
 
-    dump_person(bob);
+    void *a = mrmalloc(50);
+
     return 0;
 }
