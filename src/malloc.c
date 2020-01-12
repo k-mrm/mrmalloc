@@ -1,10 +1,26 @@
 #include <stdio.h>
 #include <unistd.h>
-
 #include "malloc.h"
 
 static mem_header base;
 static mem_header *freelist = NULL;
+
+#define MINALLOC 1024
+
+mem_header *morecore(size_t nunits) {
+    if(MINALLOC > nunits) {
+        nunits = MINALLOC;
+    }
+
+    void *p = sbrk(sizeof(mem_header) * nunits);
+
+    if(p == (void *)-1) return NULL;
+
+    mem_header *up = (mem_header *)p;
+    up->size = nunits;
+
+    /* TODO: link to freelist */
+}
 
 void *mrmalloc(size_t nbytes) {
     if(nbytes == 0) {
