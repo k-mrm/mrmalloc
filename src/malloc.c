@@ -15,10 +15,19 @@ void *mrmalloc(size_t nbytes) {
     size_t nunits = (nbytes + sizeof(mem_header) - 1) / sizeof(mem_header) + 1;
     printf("%zd units\n", nunits);
 
-    if(freelist == NULL) {
+    mem_header *prev = freelist;
+
+    if(freelist == NULL) { /* first call of malloc */
         freelist = &base;
+        prev = &base;
         base.ptr = freelist;
         base.size = 0;
+    }
+
+    for(mem_header *p = prev->ptr; ; prev = p, p = prev->ptr) {
+        if(p == freelist) {
+            ;
+        }
     }
 
     void *ptr = sbrk(nbytes);
