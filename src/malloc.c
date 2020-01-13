@@ -32,7 +32,6 @@ void *mrmalloc(size_t nbytes) {
 
     /* size of 1unit == sizeof(mem_header) */
     size_t nunits = (nbytes + sizeof(mem_header) - 1) / sizeof(mem_header) + 1;
-    printf("%zd units\n", nunits);
 
     mem_header *prev = freep;
 

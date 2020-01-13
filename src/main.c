@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 
 #include "malloc.h"
 
@@ -16,20 +17,32 @@ Person *new_person(char *name, int age, int sex) {
     new->name = name;
     new->age = age;
     new->sex = sex;
+
+    return new;
 }
 
 void dump_person(Person *p) {
     printf("%s, %d, %s\n",
            p->name,
            p->age,
-           (p->sex == MAN) ? "man" : WOMAN ? "woman" : "other");
+           (p->sex == MAN) ? "man"
+           : (p->sex == WOMAN) ? "woman"
+           : "other");
 }
 
 int main(void) {
     printf("%zdbyte\n", __alignof__(mem_header));
     printf("%zdbyte\n", sizeof(mem_header));
 
-    void *a = mrmalloc(50);
+    /*
+    Person *garin = new_person("garin", 3141, OTHER);
+    dump_person(garin);
+    mrfree(garin); */
+
+    for(;;) {
+        void *a = mrmalloc(200000);
+        mrfree(a);
+    }
 
     return 0;
 }
