@@ -21,6 +21,8 @@ static mem_header *morecore(size_t nunits) {
 
     /* TODO: link to freelist */
     mrfree((void *)(up + 1));
+
+    return freep;
 }
 
 void *mrmalloc(size_t nbytes) {
@@ -41,19 +43,25 @@ void *mrmalloc(size_t nbytes) {
     }
 
     for(mem_header *p = prev->ptr; ; prev = p, p = prev->ptr) {
+        if(p->size >= nunits) { /* enough */
+            if(p->size == nunits) {
+                prev->ptr = p->ptr;
+            }
+            else {
+                p->size -= nunits;
+                p += p->size;
+                p->size = nunits;
+            }
+            freep = prev;
+            return (void *)(p + 1);
+        }
+
         if(p == freep) {
             if((p = morecore(nunits)) == NULL) {
                 return NULL;
             }
         }
     }
-
-    void *ptr = sbrk(nbytes);
-    if(ptr == (void *)-1) {
-        return NULL;
-    }
-
-    return ptr;
 }
 
 void mrfree(void *ptr) {
@@ -71,9 +79,9 @@ void mrfree(void *ptr) {
 
     if(bp + bp->size == p->ptr) {
     /*
-     *   ...@----@++++@*****@--@...++@----
-     *      ^         ^     ^        ^
-     *      p         bp    p->ptr   p->ptr->ptr
+     *   ...@----@++++@****@---@+++++@---@...
+     *      ^         ^    ^         ^
+     *      p         bp   p->ptr    p->ptr->ptr
      */
         bp->size += p->ptr->size;
         bp->ptr = p->ptr->ptr;
@@ -91,7 +99,7 @@ void mrfree(void *ptr) {
     /*
      *   ...@----@*****@++++@--@...
      *      ^    ^          ^
-     *      p    bp         p->ptr
+     *      p    bp         bp->ptr
      */
         p->size += bp->size;
         p->ptr = bp->ptr;
