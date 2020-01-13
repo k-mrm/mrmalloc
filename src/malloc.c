@@ -7,7 +7,7 @@ static mem_header *freelist = NULL;
 
 #define MINALLOC 1024
 
-mem_header *morecore(size_t nunits) {
+static mem_header *morecore(size_t nunits) {
     if(MINALLOC > nunits) {
         nunits = MINALLOC;
     }
@@ -20,6 +20,7 @@ mem_header *morecore(size_t nunits) {
     up->size = nunits;
 
     /* TODO: link to freelist */
+    mrfree((void *)(up + 1));
 }
 
 void *mrmalloc(size_t nbytes) {
@@ -42,7 +43,9 @@ void *mrmalloc(size_t nbytes) {
 
     for(mem_header *p = prev->ptr; ; prev = p, p = prev->ptr) {
         if(p == freelist) {
-            ;
+            if((p = morecore(nunits)) == NULL) {
+                return NULL;
+            }
         }
     }
 
@@ -58,4 +61,6 @@ void mrfree(void *ptr) {
     if(ptr == NULL) {
         return;
     }
+
+    mem_header *headp = (mem_header *)ptr - 1;
 }
